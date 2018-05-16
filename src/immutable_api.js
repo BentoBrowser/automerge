@@ -1,6 +1,7 @@
 const { Map, List, Set, Record } = require('immutable')
 const State = require('./state')
 const OpSet = require('./op_set')
+const patch = require('./immutable_patch')
 
 
 //// Write
@@ -126,6 +127,8 @@ class WriteList {
     return `WriteList(${this._objectId}) ${listString}`
   }
 
+  
+  
   // Persistent changes
 
   // Unlike the Immutable.JS API, it's an error to `set` beyond the current
@@ -195,6 +198,10 @@ class WriteList {
     throw new Error('Not yet implemented')
   }
 
+  patch(changes) {
+    return patch(this, changes)
+  }
+  
   // mergeIn()
   // mergeDeepIn()
 
@@ -221,7 +228,6 @@ class WriteList {
   // groupBy()
 
   // Conversion to Javascript types
-  // toJS()
   // toJSON()
   // toArray()
   // toObject()
@@ -412,6 +418,10 @@ class WriteMap {
     return this.set(key, newValue)
   }
 
+  patch(changes) {
+    return patch(this, changes)
+  }
+  
   // merge()
   // concat()
   // mergeWith()
@@ -483,7 +493,9 @@ class WriteMap {
   // groupBy()
 
   // Conversion to Javascript types
-  // toJS()
+  toJS() {
+    return this._materialize().toJS()
+  }
   // toJSON()
   // toArray()
   // toObject()
@@ -672,8 +684,9 @@ class ReadList {
   // groupBy()
 
   // Conversion to Javascript types
-  // toJS()
-  // toJSON()
+  toJS() {
+    return this._data.toJS()
+  }  // toJSON()
   // toArray()
   // toObject()
 
@@ -836,8 +849,9 @@ class ReadMap {
   // groupBy()
 
   // Conversion to Javascript types
-  // toJS()
-  // toJSON()
+  toJS() {
+    return this._data.toJS()
+  }  // toJSON()
   // toArray()
   // toObject()
 

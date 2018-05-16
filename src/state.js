@@ -1,4 +1,4 @@
-const { List, Map, fromJS, is } = require('immutable')
+const { Iterable, List, Set, Map, fromJS, is } = require('immutable')
 const uuid = require('uuid/v4')
 
 const { isObject, isImmutableJS } = require('./predicates')
@@ -35,18 +35,23 @@ function createNestedObjects(state, value) {
   const objectId = uuid()
 
   if (isImmutableJS(value)) {
-    if (List.isList(value)) {
+    if (Set.isSet(value)) {
+      value = value.toList()
+    }
+    if (Iterable.isIndexed(value)) {
       state = makeOp(state, { action: 'makeList', obj: objectId })
       let elemId = '_head'
       for (let [i, v] of value.entries()) {
         [state, elemId] = insertAfter(state, objectId, elemId)
         state = setField(state, objectId, elemId, v)
       }
-    } else if (Map.isMap(value)) {
-      state = makeOp(state, { action: 'makeMap', obj: objectId })
+    } else if (Iterable.isKeyed(value)) {
+      state = makeOp(state, { action: 'makeMap', obj: objectId })        
       for (let [k, v] of value.entries()) {
         state = setField(state, objectId, k, v)
       }
+      if (value.object)
+        state = setField(state, objectId, 'object', value.object)
     } else {
       throw new Error('unrecognized immutable value (and should be unreachable)')
     }

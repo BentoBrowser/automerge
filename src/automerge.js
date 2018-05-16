@@ -80,6 +80,14 @@ function save(doc) {
   return transit.toJSON(doc._state.getIn(['opSet', 'history']))
 }
 
+function saveJS(doc) {
+  checkTarget('save', doc)
+  return doc._state.getIn(['opSet', 'history']).toJS()
+}
+function loadImmutableJS(obj, actorId) {
+  return ImmutableAPI.applyChanges(ImmutableAPI.init(actorId || uuid()), obj, false)
+}
+
 function equals(val1, val2) {
   if (!isObject(val1) || !isObject(val2)) return val1 === val2
   const keys1 = Object.keys(val1).sort(), keys2 = Object.keys(val2).sort()
@@ -184,10 +192,12 @@ function getMissingDeps(doc) {
 }
 
 module.exports = {
-  init, change, merge, diff, assign, load, save, equals, inspect, getHistory,
+  init, change, merge, diff, assign, load, save, saveJS, loadImmutableJS, equals, inspect, getHistory,
   initImmutable, loadImmutable, getConflicts,
   getChanges, getChangesForActor, applyChanges, getMissingDeps, Text,
   DocSet: require('./doc_set'),
   WatchableDoc: require('./watchable_doc'),
-  Connection: require('./connection')
+  Connection: require('./connection'),
+  ImmutablePatch: require('./immutable_patch'),
+  ImmutableDiff: require('./immutable_diff')
 }
