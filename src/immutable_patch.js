@@ -84,12 +84,12 @@ var sequencePatch = function(sequence, firstPath, restPath, op, value) {
 var anyPatch = function(any, pathArray, op, value) {
   var firstPath, restPath;
 
-  if (Immutable.Iterable.isKeyed(any) || any.constructor.name.includes("Map")) {
+  if (any && (Immutable.Iterable.isKeyed(any) || any.constructor.name.includes("Map"))) {
     if (pathArray.length === 0) { return any; }
     firstPath = pathArray[0];
     restPath = pathArray.slice(1);
     return mapPatch(any, firstPath, restPath, op, value);
-  } else if (Immutable.Iterable.isIndexed(any) || any.constructor.name.includes("List")) {
+  } else if (any && (Immutable.Iterable.isIndexed(any) || any.constructor.name.includes("List"))) {
     if (pathArray.length === 0) { return any; }
     firstPath = pathArray[0];
     restPath = pathArray.slice(1);
